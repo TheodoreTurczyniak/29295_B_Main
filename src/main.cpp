@@ -96,7 +96,8 @@ void autonomous() {
   chassis.drive_sensor_reset();               // Reset drive sensors to 0
   chassis.odom_xyt_set(0_in, 0_in, 0_deg);    // Set the current position, you can start at a specific position with this
   chassis.drive_brake_set(MOTOR_BRAKE_HOLD);  // Set motors to hold.  This helps autonomous consistency
-  skillsAuton();
+  // skillsAuton();
+  testAuton();
 
 
   /*
@@ -229,18 +230,19 @@ double turnC = 0.0;
 bool halfSpeed = false;
 double leftDrv;
 double rightDrv;
+bool MatchLoadBool = false;
+bool DescoreBool = false;
 
 void opcontrol() {
   // This is preference to what you like to drive on
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
-
   while (true) {
-    // Gives you some extras to make EZ-Template ezier
+  #pragma region DriveTrain
+      // Gives you some extras to make EZ-Template ezier
     //Matthews drivetrain code (ABSOLUTELY DO NOT TOUCH)
     ez_template_extras();
-    #pragma region DriveTrain
     // Setting power and turn variables
-    power = master.get_analog(ANALOG_LEFT_Y);  // Left stick vertical
+    power = - master.get_analog(ANALOG_LEFT_Y);  // Left stick vertical
     turn = - master.get_analog(ANALOG_RIGHT_X);  // Right stick horizontal
 
     // Calculating velocity
@@ -261,34 +263,77 @@ void opcontrol() {
     // Arcade Drive, setting the motor velocity
     chassis.drive_set(leftDrv, rightDrv);
   #pragma endregion
+  #pragma region Intake
 
 if(master.get_digital(DIGITAL_R2)){
-intake.move(-127);}
+  intake.move(127);
+}
+else{
+  intake.move(0);
+}
 
-else if(master.get_digital(DIGITAL_L2)){
-intake.move(127); 
-short_scorer.move(127);}
+  #pragma endregion
+  #pragma region MiddleGoal
 
-else if(master.get_digital(DIGITAL_L1)){
-intake.move(-127);
-tall_scorer.move(-127); 
-short_scorer.move(127);}
+ if(master.get_digital(DIGITAL_L2)){
+ middle_scorer.move(127);
+ }
+ else if (master.get_digital(DIGITAL_R1)){
+ middle_scorer.move(-127);
+ intake.move(-127);
+ tall_scorer.move(127);
+ } 
+ else{
+  middle_scorer.move(0);
+ }
 
-else if(master.get_digital(DIGITAL_R1)){
-intake.move(-127); 
-short_scorer.move(-127);
-tall_scorer.move(-127);}
+  #pragma endregion
+  #pragma region LongGoal
 
-else if (master.get_digital(DIGITAL_A)){
-matchLoader.set(true); }
+if(master.get_digital(DIGITAL_L1)){
+tall_scorer.move(-127);
+}
+else{
+  tall_scorer.move(0);
+}
 
-else if (master.get_digital(DIGITAL_B)){
-matchLoader.set(false); }
+  #pragma endregion
+  #pragma region MatchLoader
 
-else {
-  intake.move(0); 
-tall_scorer.move(0);
-short_scorer.move(0);}
+if (master.get_digital_new_press(DIGITAL_A)){
+  MatchLoadBool = !MatchLoadBool;
+ }
+
+ if (MatchLoadBool == true){
+  matchLoader.set(true);
+ }
+
+  if (MatchLoadBool == false){
+  matchLoader.set(false);
+ }
+  #pragma endregion
+  #pragma region Descore
+
+if (master.get_digital_new_press(DIGITAL_B)){
+DescoreBool = !DescoreBool; 
+}
+
+if (DescoreBool == true){
+descore.set(true);
+}
+
+if (DescoreBool == false){
+  descore.set(false);
+}
+  #pragma endregion
+
+/* TODO FOR ME
+Change the piston activation code so you can just attatch it to a boolean and not have two separate buttons
+Make the piston code be separate if statements, not else ifs for due to input delay
+make intake and scoring code not shit by making them control different stages
+better to have them trigger different stages
+I dislike the top two cause it involves pressing buttons which is hard
+*/
     pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
   }
 }

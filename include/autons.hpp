@@ -4,3 +4,4 @@ void default_constants();
 
 //define here
 void skillsAuton();
+void testAuton();

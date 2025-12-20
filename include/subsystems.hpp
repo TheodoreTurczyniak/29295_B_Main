@@ -8,5 +8,6 @@ extern Drive chassis;
 //make sure to extern your motors here
 extern pros::Motor intake;
 extern pros::Motor tall_scorer;
-extern pros::Motor short_scorer;
+extern pros::Motor middle_scorer;
 extern ez::Piston matchLoader;
+extern ez::Piston descore;
