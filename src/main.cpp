@@ -1,7 +1,7 @@
 #include "main.h"
 #include "subsystems.hpp"
 
-
+// pee pee
 /////
 // For installation, upgrading, documentations, and tutorials, check out our website!
 // https://ez-robotics.github.io/EZ-Template/
@@ -96,9 +96,7 @@ void autonomous() {
   chassis.drive_sensor_reset();               // Reset drive sensors to 0
   chassis.odom_xyt_set(0_in, 0_in, 0_deg);    // Set the current position, you can start at a specific position with this
   chassis.drive_brake_set(MOTOR_BRAKE_HOLD);  // Set motors to hold.  This helps autonomous consistency
-  // skillsAuton();
-  testAuton();
-
+      skillsAuton();
 
   /*
   Odometry and Pure Pursuit are not magic
@@ -187,10 +185,9 @@ void ez_template_extras() {
       chassis.pid_tuner_toggle();
 
     // Trigger the selected autonomous routine
-    if (master.get_digital(DIGITAL_B) && master.get_digital(DIGITAL_DOWN)) {
+    if ((master.get_digital(DIGITAL_B))) {
       pros::motor_brake_mode_e_t preference = chassis.drive_brake_get();
       autonomous();
-      chassis.drive_brake_set(preference);
     }
 
     // Allow PID Tuner to iterate
@@ -221,7 +218,7 @@ void ez_template_extras() {
 // Matthews constant for a really good drivetrain DO NOT TOUCH
 // Use the PROS 'master' controller (defined in main.h)
 float pCurve = 0.5;        // curve for fwd/back
-float tCoefficient = 1.4;  // curve for turn
+float tCoefficient = - 2.8;  // curve for turn
 float tCurve = 0.5;        // coefficient for turn
 double power = 0.0;
 double powerC = 0.0;
@@ -230,8 +227,7 @@ double turnC = 0.0;
 bool halfSpeed = false;
 double leftDrv;
 double rightDrv;
-bool MatchLoadBool = false;
-bool DescoreBool = false;
+bool driveBool = false;
 
 void opcontrol() {
   // This is preference to what you like to drive on
@@ -242,7 +238,7 @@ void opcontrol() {
     //Matthews drivetrain code (ABSOLUTELY DO NOT TOUCH)
     ez_template_extras();
     // Setting power and turn variables
-    power = - master.get_analog(ANALOG_LEFT_Y);  // Left stick vertical
+    power = master.get_analog(ANALOG_LEFT_Y);  // Left stick vertical
     turn = - master.get_analog(ANALOG_RIGHT_X);  // Right stick horizontal
 
     // Calculating velocity
@@ -252,81 +248,44 @@ void opcontrol() {
     // Calculating turn curve
     turnC = tCoefficient * ((1 - tCurve) * turn) + ((tCurve * pow(turn, 3)) / 20736);
 
-    // Setting Halfspeed
-    if (halfSpeed) {
-      powerC *= 0.75;
-    }
-
     leftDrv = powerC + turnC;
     rightDrv = powerC - turnC;
 
     // Arcade Drive, setting the motor velocity
     chassis.drive_set(leftDrv, rightDrv);
   #pragma endregion
-  #pragma region Intake
-
-if(master.get_digital(DIGITAL_R2)){
-  intake.move(127);
-}
-else{
-  intake.move(0);
-}
-
-  #pragma endregion
-  #pragma region MiddleGoal
-
- if(master.get_digital(DIGITAL_L2)){
- middle_scorer.move(127);
- }
- else if (master.get_digital(DIGITAL_R1)){
- middle_scorer.move(-127);
- intake.move(-127);
- tall_scorer.move(127);
- } 
- else{
-  middle_scorer.move(0);
- }
-
-  #pragma endregion
-  #pragma region LongGoal
-
-if(master.get_digital(DIGITAL_L1)){
-tall_scorer.move(-127);
-}
-else{
-  tall_scorer.move(0);
-}
-
-  #pragma endregion
-  #pragma region MatchLoader
-
-if (master.get_digital_new_press(DIGITAL_A)){
-  MatchLoadBool = !MatchLoadBool;
- }
-
- if (MatchLoadBool == true){
-  matchLoader.set(true);
- }
-
-  if (MatchLoadBool == false){
-  matchLoader.set(false);
- }
-  #pragma endregion
-  #pragma region Descore
-
-if (master.get_digital_new_press(DIGITAL_B)){
-DescoreBool = !DescoreBool; 
-}
-
-if (DescoreBool == true){
-descore.set(true);
-}
-
-if (DescoreBool == false){
-  descore.set(false);
+  #pragma region Arm
+  if (master.get_digital(DIGITAL_R1)) 
+  {
+   arm.brake();
+   arm.move(70);
+  }
+  else if (master.get_digital(DIGITAL_R2)) 
+  {
+   arm.brake();
+   arm.move(- 40);
+  }
+else
+{
+  arm.move(10);
 }
   #pragma endregion
-
+  #pragma region Claw
+  if (master.get_digital(DIGITAL_L1)) 
+  {
+    claw.brake();
+   claw.move(127);
+  }
+  else if (master.get_digital(DIGITAL_L2)) 
+  {
+   claw.brake();
+   claw.move(- 127);
+  }
+else
+{
+  claw.move(0);
+}
+  #pragma endregion
 /* TODO FOR ME
 Change the piston activation code so you can just attatch it to a boolean and not have two separate buttons
 Make the piston code be separate if statements, not else ifs for due to input delay

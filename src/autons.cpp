@@ -7,8 +7,8 @@
 /////
 
 // These are out of 127
-const int DRIVE_SPEED = 90;
-const int TURN_SPEED =  90;
+const int DRIVE_SPEED = 70;
+const int TURN_SPEED =  80;
 const int SWING_SPEED = 60;
 
 ///
@@ -20,7 +20,7 @@ void default_constants() {
   chassis.pid_drive_constants_set(10, 0, 0);         // Fwd/rev constants, used for odom and non odom motions
   // 0.2, 0, 0.2 worked
   chassis.pid_heading_constants_set(1, 0, 1);        // Holds the robot straight while going forward without odom
-  chassis.pid_turn_constants_set(1, 0, 1);     // Turn in place constants
+  chassis.pid_turn_constants_set(1, 0, 0);     // Turn in place constants
   chassis.pid_swing_constants_set(0, 0, 0);           // Swing constants
   // Exit conditions
   chassis.pid_turn_exit_condition_set(40_ms, 3_deg, 250_ms, 7_deg, 500_ms, 500_ms);
@@ -131,36 +131,25 @@ chassis.turnPID.i_reset_get();
 void skillsAuton()
 {
 reset();
-chassis.pid_drive_set(- 30, DRIVE_SPEED);
+claw.move(- 127);
+chassis.pid_wait_quick_chain();
+pros::delay(1000);
+chassis.pid_drive_set(10, DRIVE_SPEED);
+chassis.pid_wait_quick_chain();
+chassis.pid_turn_set(- 180, TURN_SPEED);
 chassis.pid_wait_quick_chain();
 reset();
-chassis.pid_turn_set(-90, TURN_SPEED);
+arm.move(127);
 chassis.pid_wait_quick_chain();
-reset();
-chassis.pid_drive_set(- 30, DRIVE_SPEED);
+chassis.pid_drive_set(12, DRIVE_SPEED);
 chassis.pid_wait_quick_chain();
-reset();
-chassis.pid_turn_set(180, TURN_SPEED);
+claw.move(127);
 chassis.pid_wait_quick_chain();
-reset();
-chassis.pid_drive_set(- 30, DRIVE_SPEED);
+chassis.pid_drive_set(-8, DRIVE_SPEED);
 chassis.pid_wait_quick_chain();
-reset();
-}
-
-void testAuton()
-{
-reset();
-chassis.pid_turn_set(-90, TURN_SPEED);
+arm.move(- 127);
 chassis.pid_wait_quick_chain();
-reset();
-chassis.pid_turn_set(180, TURN_SPEED);
-chassis.pid_wait_quick_chain();
-reset();
-chassis.pid_turn_set(-270, TURN_SPEED);
-chassis.pid_wait_quick_chain();
-reset();
-chassis.pid_turn_set(180, TURN_SPEED);
+chassis.pid_turn_set(90, TURN_SPEED);
 chassis.pid_wait_quick_chain();
 reset();
 chassis.pid_drive_set(30, DRIVE_SPEED);
