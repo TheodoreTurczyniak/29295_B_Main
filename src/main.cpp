@@ -227,7 +227,8 @@ double turnC = 0.0;
 bool halfSpeed = false;
 double leftDrv;
 double rightDrv;
-bool driveBool = false;
+bool MatchLoadBool = false;
+bool DescoreBool = false;
 
 void opcontrol() {
   // This is preference to what you like to drive on
@@ -254,36 +255,67 @@ void opcontrol() {
     // Arcade Drive, setting the motor velocity
     chassis.drive_set(leftDrv, rightDrv);
   #pragma endregion
-  #pragma region Arm
-  if (master.get_digital(DIGITAL_R1)) 
-  {
-   arm.brake();
-   arm.move(70);
-  }
-  else if (master.get_digital(DIGITAL_R2)) 
-  {
-   arm.brake();
-   arm.move(- 40);
-  }
-else
-{
-  arm.move(10);
+   #pragma region Intake
+
+if(master.get_digital(DIGITAL_R2)){
+  intake.move(127);
 }
+else{
+  intake.move(0);
+}
+
   #pragma endregion
-  #pragma region Claw
-  if (master.get_digital(DIGITAL_L1)) 
-  {
-    claw.brake();
-   claw.move(127);
-  }
-  else if (master.get_digital(DIGITAL_L2)) 
-  {
-   claw.brake();
-   claw.move(- 127);
-  }
-else
-{
-  claw.move(0);
+  #pragma region MiddleGoal
+
+ if(master.get_digital(DIGITAL_L2)){
+ middle_scorer.move(127);
+ }
+ else if (master.get_digital(DIGITAL_R1)){
+ middle_scorer.move(-127);
+ intake.move(-127);
+ tall_scorer.move(127);
+ } 
+ else{
+  middle_scorer.move(0);
+ }
+
+  #pragma endregion
+  #pragma region LongGoal
+
+if(master.get_digital(DIGITAL_L1)){
+tall_scorer.move(-127);
+}
+else{
+  tall_scorer.move(0);
+}
+
+  #pragma endregion
+  #pragma region MatchLoader
+
+if (master.get_digital_new_press(DIGITAL_A)){
+  MatchLoadBool = !MatchLoadBool;
+ }
+
+ if (MatchLoadBool == true){
+  matchLoader.set(true);
+ }
+
+  if (MatchLoadBool == false){
+  matchLoader.set(false);
+ }
+  #pragma endregion
+  #pragma region Descore
+
+if (master.get_digital_new_press(DIGITAL_B)){
+DescoreBool = !DescoreBool; 
+}
+
+if (DescoreBool == true){
+descore.set(true);
+}
+
+if (DescoreBool == false){
+  descore.set(false);
 }
   #pragma endregion
 /* TODO FOR ME

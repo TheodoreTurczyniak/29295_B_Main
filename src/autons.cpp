@@ -131,25 +131,36 @@ chassis.turnPID.i_reset_get();
 void skillsAuton()
 {
 reset();
-claw.move(- 127);
-chassis.pid_wait_quick_chain();
-pros::delay(1000);
-chassis.pid_drive_set(10, DRIVE_SPEED);
-chassis.pid_wait_quick_chain();
-chassis.pid_turn_set(- 180, TURN_SPEED);
+chassis.pid_drive_set(- 30, DRIVE_SPEED);
 chassis.pid_wait_quick_chain();
 reset();
-arm.move(127);
+chassis.pid_turn_set(-90, TURN_SPEED);
 chassis.pid_wait_quick_chain();
-chassis.pid_drive_set(12, DRIVE_SPEED);
+reset();
+chassis.pid_drive_set(- 30, DRIVE_SPEED);
 chassis.pid_wait_quick_chain();
-claw.move(127);
+reset();
+chassis.pid_turn_set(180, TURN_SPEED);
 chassis.pid_wait_quick_chain();
-chassis.pid_drive_set(-8, DRIVE_SPEED);
+reset();
+chassis.pid_drive_set(- 30, DRIVE_SPEED);
 chassis.pid_wait_quick_chain();
-arm.move(- 127);
+reset();
+}
+
+void testAuton()
+{
+reset();
+chassis.pid_turn_set(-90, TURN_SPEED);
 chassis.pid_wait_quick_chain();
-chassis.pid_turn_set(90, TURN_SPEED);
+reset();
+chassis.pid_turn_set(180, TURN_SPEED);
+chassis.pid_wait_quick_chain();
+reset();
+chassis.pid_turn_set(-270, TURN_SPEED);
+chassis.pid_wait_quick_chain();
+reset();
+chassis.pid_turn_set(180, TURN_SPEED);
 chassis.pid_wait_quick_chain();
 reset();
 chassis.pid_drive_set(30, DRIVE_SPEED);
